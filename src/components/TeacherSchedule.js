@@ -42,6 +42,7 @@ export default class TeacherSchedule extends Component<{}> {
             teachersList:[],
             teacherSchedule:[],
             semesterStarts: null,
+            weeksList:[],
         }
 
         this.teacherChanged = this.teacherChanged.bind(this);
@@ -78,13 +79,27 @@ export default class TeacherSchedule extends Component<{}> {
             .then((data) => data.json())
             .then((json) => {
                 let ss = json.filter(i => i["Key"] === "Semester Starts")
-                if (ss.length > 0) {
+                let se = json.filter(i => i["Key"] === "Semester Ends")
+                if (ss.length > 0 && se.length > 0) {
                     let semesterString = ss[0].Value;
-                    let momentSemesterStarts = moment(semesterString, "YYYY-MM-DD")
-                    momentSemesterStarts.startOf('isoweek')
+                    let momentSemesterStarts = moment(semesterString, "YYYY-MM-DD").startOf('isoweek')
+
+                    let semesterEndsString = se[0].Value;
+                    let momentSemesterEnds = moment(semesterEndsString).startOf('isoweek')
+
+                    let weekCount = (momentSemesterEnds.diff(momentSemesterStarts, 'days') / 7) + 1
+
+                    console.log("weekCount")
+                    console.log(weekCount)
+
+                    let weekArray = []
+                    for(let i = 0; i < weekCount; i++) {
+                        weekArray.push(i+1)
+                    }
 
                     this.setState({
-                        semesterStarts: momentSemesterStarts
+                        semesterStarts: momentSemesterStarts,
+                        weeksList: weekArray,
                     })
 
                     let momentNow = moment();
@@ -301,9 +316,7 @@ export default class TeacherSchedule extends Component<{}> {
             )
         });
 
-        let weeks = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]
-
-        let weeksViews = weeks.map((week, index) => {
+        let weeksViews = this.state.weeksList.map((week, index) => {
             let selectedStyle =  (week === this.state.week) ? styles.selectedWeekScheduleView : null;
 
             return (
@@ -334,10 +347,26 @@ export default class TeacherSchedule extends Component<{}> {
             })
         }
 
+        let weekStartString = ""
+        let weekEndString = ""
+
+        if (this.state.semesterStarts != null) {
+            let weekStart = this.state.semesterStarts.clone()
+            weekStart.add(this.state.week - 1, "weeks")
+            let weekEnd = weekStart.clone().add(6, "days")
+            weekStartString = weekStart.locale('ru').format("DD MMMM YYYY")
+            weekEndString = weekEnd.locale('ru').format("DD MMMM YYYY")
+        }
+
         let scheduleItems = (loading) ?
             (null) :
             ((emptySchedule) ?
-                (<Text style={styles.dowName}>Занятий нет</Text>) :
+                (
+                    <View>
+                        <Text style={styles.dowName}>Занятий нет</Text>
+                        <Text style={styles.dowName}>{weekStartString} - {weekEndString}</Text>
+                    </View>
+                ) :
                 ([WeekScheduleItems]))
 
         return (
@@ -428,7 +457,8 @@ const styles = StyleSheet.create({
     aud: {
         flex: 1,
         textAlignVertical: 'center',
-        fontSize: 12
+        fontSize: 12,
+        textAlign: 'center',
     },
     dowName: {
         backgroundColor: '#E7A97E',

@@ -42,6 +42,7 @@ export default class GroupWeekSchedule extends Component<{}> {
             groupsList:[],
             groupSchedule:{},
             semesterStarts: null,
+            weeksList:[],
         }
 
         this.groupChanged = this.groupChanged.bind(this);
@@ -79,13 +80,23 @@ export default class GroupWeekSchedule extends Component<{}> {
             .then((data) => data.json())
             .then((json) => {
                 let ss = json.filter(i => i["Key"] === "Semester Starts")
-                if (ss.length > 0) {
+                let se = json.filter(i => i["Key"] === "Semester Ends")
+                if (ss.length > 0 && se.length > 0) {
                     let semesterString = ss[0].Value;
-                    let momentSemesterStarts = moment(semesterString, "YYYY-MM-DD")
-                    momentSemesterStarts.startOf('isoweek')
+                    let momentSemesterStarts = moment(semesterString, "YYYY-MM-DD").startOf('isoweek')
+
+                    let semesterEndsString = se[0].Value;
+                    let momentSemesterEnds = moment(semesterEndsString).startOf('isoweek')
+
+                    let weekCount = (momentSemesterEnds.diff(momentSemesterStarts, 'days') / 7) + 1
+                    let weekArray = []
+                    for(let i = 0; i < weekCount; i++) {
+                        weekArray.push(i+1)
+                    }
 
                     this.setState({
-                        semesterStarts: momentSemesterStarts
+                        semesterStarts: momentSemesterStarts,
+                        weeksList: weekArray,
                     })
 
                     let momentNow = moment();
@@ -226,7 +237,16 @@ export default class GroupWeekSchedule extends Component<{}> {
                         })
                         let minWeek2 = Math.min(...weeks2)
 
-                        return minWeek1 - minWeek2
+                        let weekDiff = minWeek1 - minWeek2
+
+                        if (weekDiff !== 0) {
+                            return weekDiff
+                        }
+
+                        let groupName1 = this.state.groupSchedule[dow][time][tfdId1]["lessons"][0].groupName
+                        let groupName2 = this.state.groupSchedule[dow][time][tfdId2]["lessons"][0].groupName
+
+                        return groupName1.localeCompare(groupName2)
                     })
 
                     let firsttime = true
@@ -274,15 +294,26 @@ export default class GroupWeekSchedule extends Component<{}> {
 
                         firsttime = false
 
+                        let groupName = ""
+                        let groups = this.state.groupsList.filter(g => g.StudentGroupId === this.state.groupId)
+                        if (groups.length > 0) {
+                            groupName = groups[0].Name
+                        }
+
+                        let groupString = ""
+                        let lessonGroupName = this.state.groupSchedule[dow][time][tfdId]["lessons"][0].groupName
+                        if (lessonGroupName !== groupName) {
+                            groupString = " (" + lessonGroupName + ")"
+                        }
+
                         return(
                             <View style={styles.lessonContainer} key={tfdId}>
                                 <Text style={styles.timeStr}>{timeStr}</Text>
                                 <View style={styles.mainSchedule}>
-                                    <Text style={styles.mainScheduleDiscName}>{this.state.groupSchedule[dow][time][tfdId]["lessons"][0].discName}</Text>
+                                    <Text style={styles.mainScheduleDiscName}>{this.state.groupSchedule[dow][time][tfdId]["lessons"][0].discName}{groupString}</Text>
                                     <Text style={styles.mainScheduleTeacherFIO}>{this.state.groupSchedule[dow][time][tfdId]["lessons"][0].teacherFIO}</Text>
-                                    {/*<Text style={styles.mainScheduleWeeks}>{weeksString}</Text>*/}
                                 </View>
-                                <Text  style={styles.aud}>{audsString}</Text>
+                                <Text style={styles.aud}>{audsString}</Text>
                             </View>
                         )
                     })
@@ -306,9 +337,7 @@ export default class GroupWeekSchedule extends Component<{}> {
             )
         });
 
-        let weeks = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]
-
-        let weeksViews = weeks.map((week, index) => {
+        let weeksViews = this.state.weeksList.map((week, index) => {
             let selectedStyle =  (week === this.state.week) ? styles.selectedWeekScheduleView : null;
 
             return (
@@ -339,10 +368,26 @@ export default class GroupWeekSchedule extends Component<{}> {
             })
         }
 
+        let weekStartString = ""
+        let weekEndString = ""
+
+        if (this.state.semesterStarts != null) {
+            let weekStart = this.state.semesterStarts.clone()
+            weekStart.add(this.state.week - 1, "weeks")
+            let weekEnd = weekStart.clone().add(6, "days")
+            weekStartString = weekStart.locale('ru').format("DD MMMM YYYY")
+            weekEndString = weekEnd.locale('ru').format("DD MMMM YYYY")
+        }
+
         let scheduleItems = (loading) ?
             (null) :
             ((emptySchedule) ?
-                (<Text style={styles.dowName}>Занятий нет</Text>) :
+                (
+                    <View>
+                        <Text style={styles.dowName}>Занятий нет</Text>
+                        <Text style={styles.dowName}>{weekStartString} - {weekEndString}</Text>
+                    </View>
+                ) :
                 ([WeekScheduleItems]))
 
         return (
@@ -433,11 +478,12 @@ const styles = StyleSheet.create({
     aud: {
         flex: 1,
         textAlignVertical: 'center',
-        fontSize: 12
+        fontSize: 12,
+        textAlign: 'center',
     },
     dowName: {
         backgroundColor: '#E7A97E',
         textAlign: 'center',
-        fontSize: 18
+        fontSize: 18,
     },
 });

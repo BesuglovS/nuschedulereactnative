@@ -137,16 +137,44 @@ export default class GroupDaySchedule extends Component<{}> {
     render() {
         const { navigate } = this.props.navigation;
 
-        const scheduleItems = this.state.groupSchedule.map((lesson, index) => (
-            <View style={styles.lessonContainer} key={index}>
-                <Text style={styles.timeStr}>{lesson.Time}</Text>
-                <View style={styles.mainSchedule}>
-                    <Text style={styles.mainScheduleDiscName}>{lesson.discName}</Text>
-                    <Text style={styles.mainScheduleTeacherFIO}>{lesson.FIO}</Text>
+        let firstTime = true
+        let timeString = ""
+
+        const scheduleItems = this.state.groupSchedule.map((lesson, index) => {
+            let timeStr = ""
+            if (lesson.Time !== timeString) {
+                firstTime = true
+                timeStr = lesson.Time
+            } else {
+                firstTime = false
+                timeStr = ""
+            }
+
+            timeString = timeStr
+
+            let groupName = ""
+            let groups = this.state.groupsList.filter(g => g.StudentGroupId === this.state.groupId)
+            if (groups.length > 0) {
+                groupName = groups[0].Name
+            }
+
+            let groupString = ""
+            let lessonGroupName = lesson.groupName
+            if (lessonGroupName !== groupName) {
+                groupString = " (" + lessonGroupName + ")"
+            }
+
+            return (
+                <View style={styles.lessonContainer} key={index}>
+                    <Text style={styles.timeStr}>{timeStr}</Text>
+                    <View style={styles.mainSchedule}>
+                        <Text style={styles.mainScheduleDiscName}>{lesson.discName}{groupString}</Text>
+                        <Text style={styles.mainScheduleTeacherFIO}>{lesson.FIO}</Text>
+                    </View>
+                    <Text  style={styles.aud}>{lesson.audName}</Text>
                 </View>
-                <Text  style={styles.aud}>{lesson.audName}</Text>
-            </View>
-        ))
+            )
+        })
 
 
         const groupsPickerItems = this.state.groupsList.map((val, ind) => {
@@ -253,7 +281,8 @@ const styles = StyleSheet.create({
     aud: {
         flex: 1,
         textAlignVertical: 'center',
-        fontSize: 12
+        fontSize: 12,
+        textAlign: 'center',
     },
     dowName: {
         backgroundColor: '#E7A97E',

@@ -1,0 +1,13 @@
+For release
+
+Pop versions up (versionCode + versionName) in android/app/build.gradle
+
+android/app/src/main/AndroidManifest.xml
+uncomment line 12
+<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" tools:node="remove" />
+
+cd android
+gradlew assembleRelease
+
+test release
+react-native run-android --variant=release
