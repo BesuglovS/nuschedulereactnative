@@ -18,7 +18,7 @@ import LastLesson from "./src/components/LastLesson";
 import DisciplineLessons from "./src/components/DisciplineLessons";
 import GroupSession from "./src/components/GroupSession";
 import TeacherSession from "./src/components/TeacherSession";
-import Storage from './src/core/Storage'
+import TeacherLessons from "./src/components/TeacherLessons";
 
 const CustomDrawerContentComponent = (props) => (
     <ScrollView>
@@ -49,6 +49,7 @@ const nuschedulereactnative = (DrawerNavigator({
         TeacherDisciplines: {screen: TeacherDisciplines},
         LastLesson: {screen: LastLesson},
         DisciplineLessons: {screen: DisciplineLessons},
+        TeacherLessons: {screen: TeacherLessons},
     },
     DrawerNavigatorConfig))
 
