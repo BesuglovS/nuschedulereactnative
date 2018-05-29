@@ -16,9 +16,9 @@ import Storage from '../core/Storage'
 import moment from 'moment'
 import 'moment/locale/ru';
 
-export default class LastLesson extends Component<{}> {
+export default class LastLessonFaculty extends Component<{}> {
     static navigationOptions = {
-        drawerLabel: 'Последний урок (по группе)',
+        drawerLabel: 'Последний урок (по факультету)',
         // drawerIcon: ({ tintColor }) => (
         //     <Image
         //         source={require('./chats-icon.png')}
@@ -31,31 +31,31 @@ export default class LastLesson extends Component<{}> {
         super(props);
 
         this.state = {
-            groupId: '',
-            groupsList:[],
+            facultyId: '',
+            facultiesList:[],
             lastLessonsList:[]
         }
     }
 
     componentDidMount() {
-        let mainGroupsAPIUrl = 'http://wiki.nayanova.edu/api.php?action=list&listtype=mainStudentGroups';
-        fetch(mainGroupsAPIUrl)
+        let facultyAPIUrl = 'http://wiki.nayanova.edu/api.php?action=list&listtype=faculties';
+        fetch(facultyAPIUrl)
             .then((data) => data.json())
             .then((json) => {
                 this.setState({
-                    groupsList: json
+                    facultiesList: json
                 })
 
-                Storage.FetchData("groupName", (err, data) => {
+                Storage.FetchData("facultyName", (err, data) => {
                     if (err === null && data !== null) {
-                        let groups = this.state.groupsList.filter(g => g.Name === data)
+                        let faculties = this.state.facultiesList.filter(g => g.Name === data)
 
-                        if (groups.length > 0) {
-                            this.groupChanged(groups[0].StudentGroupId)
+                        if (faculties.length > 0) {
+                            this.facultyChanged(faculties[0].FacultyId)
                         }
                     } else {
                         if (json.length > 0) {
-                            this.groupChanged(json[0].StudentGroupId)
+                            this.facultyChanged(json[0].FacultyId)
                         }
                     }
                 })
@@ -65,21 +65,19 @@ export default class LastLesson extends Component<{}> {
             });
     }
 
-    groupChanged(groupId) {
-        let groups = this.state.groupsList.filter(g => g.StudentGroupId === groupId)
-        if (groups.length > 0) {
-            Storage.SaveData("groupName", groups[0].Name)
+    facultyChanged(facultyId) {
+        let faculties = this.state.facultiesList.filter(f => f.FacultyId === facultyId)
+        if (faculties.length > 0) {
+            Storage.SaveData("facultyName", faculties[0].Name)
         }
 
-        this.setState({groupId: groupId})
+        this.setState({facultyId: facultyId})
 
-        let studentGroupId = (groupId !== undefined) ? groupId : this.state.groupId;
-        if (studentGroupId === "") return
+        if (facultyId === "") return
         //http://wiki.nayanova.edu/api.php?action=LastLessons&groupId=15
-        let dailyScheduleAPIUrl =
-            'http://wiki.nayanova.edu/api.php?action=LastLessons&groupId=' +
-            studentGroupId;
-        fetch(dailyScheduleAPIUrl)
+        let lastLessonUrl =
+            'http://wiki.nayanova.edu/api.php?action=LastLessons&facultyId=' + facultyId;
+        fetch(lastLessonUrl)
             .then((data) => data.json())
             .then((json) => {
                 this.setState({
@@ -132,9 +130,9 @@ export default class LastLesson extends Component<{}> {
     render() {
         const { navigate } = this.props.navigation;
 
-        const groupsPickerItems = this.state.groupsList.map((val, ind) => {
+        const groupsPickerItems = this.state.facultiesList.map((val, ind) => {
             return (
-                <Picker.Item value={val.StudentGroupId} label={val.Name} key={ind} />
+                <Picker.Item value={val.FacultyId} label={val.Name} key={ind} />
             )
         });
 
@@ -167,9 +165,9 @@ export default class LastLesson extends Component<{}> {
                 <Text style={styles.mainHeader}>Последний урок</Text>
 
                 <Picker
-                    selectedValue={this.state.groupId}
+                    selectedValue={this.state.facultyId}
                     onValueChange={(itemValue) => {
-                        this.groupChanged(itemValue)
+                        this.facultyChanged(itemValue)
                     }}>
                     {groupsPickerItems}
                 </Picker>

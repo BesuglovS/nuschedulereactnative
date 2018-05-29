@@ -8,6 +8,7 @@ uncomment line 12
 
 cd android
 gradlew assembleRelease
+Path to release = \android\app\build\outputs\apk
 
 test release
 react-native run-android --variant=release

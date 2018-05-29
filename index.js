@@ -15,6 +15,7 @@ import TeacherDisciplines from "./src/components/TeacherDisciplines";
 import TeacherSchedule from "./src/components/TeacherSchedule";
 import GroupDaySchedule from "./src/components/GroupDaySchedule";
 import LastLesson from "./src/components/LastLesson";
+import LastLessonFaculty from "./src/components/LastLessonFaculty";
 import DisciplineLessons from "./src/components/DisciplineLessons";
 import GroupSession from "./src/components/GroupSession";
 import TeacherSession from "./src/components/TeacherSession";
@@ -48,6 +49,7 @@ const nuschedulereactnative = (DrawerNavigator({
         GroupDisciplines: {screen: GroupDisciplines},
         TeacherDisciplines: {screen: TeacherDisciplines},
         LastLesson: {screen: LastLesson},
+        LastLessonFaculty: {screen: LastLessonFaculty},
         DisciplineLessons: {screen: DisciplineLessons},
         TeacherLessons: {screen: TeacherLessons},
     },
