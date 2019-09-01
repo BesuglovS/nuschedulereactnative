@@ -81,6 +81,7 @@ export default class GroupDaySchedule extends Component<{}> {
         let studentGroupId = (groupId !== undefined) ? groupId : this.state.groupId;
         let scheduleDate = (date !== undefined) ? date : this.state.scheduleDate;
         if (studentGroupId === "") return
+
         //http://wiki.nayanova.edu/api.php?action=dailySchedule&groupId=84&date=2017-11-29
         let dailyScheduleAPIUrl = 'http://wiki.nayanova.edu/api.php?action=dailySchedule' +
             '&groupId=' + studentGroupId +
@@ -140,7 +141,8 @@ export default class GroupDaySchedule extends Component<{}> {
         let firstTime = true
         let timeString = ""
 
-        const scheduleItems = this.state.groupSchedule.map((lesson, index) => {
+        const scheduleItems = (this.state.groupSchedule[0] !== undefined) ?
+            (this.state.groupSchedule[0].Lessons.map((lesson, index) => {
             let timeStr = ""
             if (lesson.Time !== timeString) {
                 firstTime = true
@@ -174,7 +176,7 @@ export default class GroupDaySchedule extends Component<{}> {
                     <Text  style={styles.aud}>{lesson.audName}</Text>
                 </View>
             )
-        })
+        })) : null
 
 
         const groupsPickerItems = this.state.groupsList.map((val, ind) => {
@@ -184,7 +186,7 @@ export default class GroupDaySchedule extends Component<{}> {
         });
 
 
-        let scheduleItemsWrapper = (this.state.groupSchedule.length === 0) ?
+        let scheduleItemsWrapper = (this.state.groupSchedule[0] !== undefined && this.state.groupSchedule[0].Lessons.length === 0) ?
                 (<Text style={styles.dowName}>Занятий нет</Text>) :
                 ([scheduleItems])
 

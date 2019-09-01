@@ -105,19 +105,13 @@ export default class TeacherDisciplines extends Component<{}> {
                     <Text style={styles.tableCellText}>{item.Name}</Text>
                 </View>
                 <View style={styles.tableCell}>
-                    <Text style={styles.tableCellText}>{item.GroupName}</Text>
+                    <Text style={styles.tableCellText}>{item.groupName}</Text>
                 </View>
                 <View style={styles.tableCell}>
                     <Text style={styles.tableCellText}>{item.AuditoriumHours}</Text>
                 </View>
                 <View style={styles.tableCell}>
                     <Text style={styles.tableCellText}>{item.hoursCount}</Text>
-                </View>
-                <View style={styles.tableCell}>
-                    <Text style={styles.tableCellText}>{item.LectureHours}</Text>
-                </View>
-                <View style={styles.tableCell}>
-                    <Text style={styles.tableCellText}>{item.PracticalHours}</Text>
                 </View>
                 <View style={[styles.tableCell, {flex:1.5}]}>
                     <Text style={styles.tableCellText}>{Attestation[item.Attestation]}</Text>
@@ -153,12 +147,6 @@ export default class TeacherDisciplines extends Component<{}> {
                     </View>
                     <View style={styles.tableCell}>
                         <Text style={styles.tableCellText}>В расписании</Text>
-                    </View>
-                    <View style={styles.tableCell}>
-                        <Text style={styles.tableCellText}>Лекции</Text>
-                    </View>
-                    <View style={styles.tableCell}>
-                        <Text style={styles.tableCellText}>Практики</Text>
                     </View>
                     <View style={[styles.tableCell, {flex:1.5}]}>
                         <Text style={styles.tableCellText}>Отчётность</Text>

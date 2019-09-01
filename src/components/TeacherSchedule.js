@@ -89,9 +89,6 @@ export default class TeacherSchedule extends Component<{}> {
 
                     let weekCount = (momentSemesterEnds.diff(momentSemesterStarts, 'days') / 7) + 1
 
-                    console.log("weekCount")
-                    console.log(weekCount)
-
                     let weekArray = []
                     for(let i = 0; i < weekCount; i++) {
                         weekArray.push(i+1)
@@ -122,12 +119,14 @@ export default class TeacherSchedule extends Component<{}> {
 
     updateSchedule(tId, w) {
         let teacherId = tId ? tId : this.state.teacherId;
+        if (teacherId == "") return;
         let week = w ? w : this.state.week;
 
         //http://wiki.nayanova.edu/api.php?action=TeacherWeekSchedule&teacherId=57&week=2
         let teacherWeekSchedule = 'http://wiki.nayanova.edu/api.php?action=teacherWeeksSchedule' +
             '&teacherId=' + teacherId +
             '&weeks=' + week + "&compactResult";
+
         fetch(teacherWeekSchedule)
             .then((data) => data.json())
             .then((json) => {
@@ -446,7 +445,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     mainScheduleDiscName: {
-
+        color: '#222',
+        fontWeight: '900',
     },
     mainScheduleGroupName: {
 

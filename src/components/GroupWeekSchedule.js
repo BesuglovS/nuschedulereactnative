@@ -467,7 +467,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     mainScheduleDiscName: {
-
+        color: '#222',
+        fontWeight: '900',
     },
     mainScheduleTeacherFIO: {
 

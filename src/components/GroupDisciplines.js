@@ -78,11 +78,28 @@ export default class GroupDisciplines extends Component<{}> {
         let dailyScheduleAPIUrl =
             'http://wiki.nayanova.edu/api.php?action=list&listtype=groupDisciplines&groupId=' +
             studentGroupId;
+
         fetch(dailyScheduleAPIUrl)
             .then((data) => data.json())
             .then((json) => {
+                let result = [];
+                Object.keys(json).forEach(function(tfdId) {
+                    let discipline = json[tfdId];
+                    discipline['tfdId'] = tfdId;
+                    result.push(discipline);
+                });
+
+                result = result.sort((a,b) => {
+                    if (a.Name === b.Name) {
+                        if (a.GroupName === b.GroupName) return 0;
+                        return (a.GroupName < b.GroupName) ? -1 : 1;
+                    }
+
+                    return a.Name < b.Name ? -1 : 1;
+                });
+
                 this.setState({
-                    groupDisciplines: json
+                    groupDisciplines: result
                 })
             })
             .catch(function(error) {
@@ -114,12 +131,6 @@ export default class GroupDisciplines extends Component<{}> {
                 </View>
                 <View style={styles.tableCell}>
                     <Text style={styles.tableCellText}>{item.hoursCount}</Text>
-                </View>
-                <View style={styles.tableCell}>
-                    <Text style={styles.tableCellText}>{item.LectureHours}</Text>
-                </View>
-                <View style={styles.tableCell}>
-                    <Text style={styles.tableCellText}>{item.PracticalHours}</Text>
                 </View>
                 <View style={[styles.tableCell, {flex:1.5}]}>
                     <Text style={styles.tableCellText}>{Attestation[item.Attestation]}</Text>
@@ -155,12 +166,6 @@ export default class GroupDisciplines extends Component<{}> {
                     </View>
                     <View style={styles.tableCell}>
                         <Text style={styles.tableCellText}>В расписании</Text>
-                    </View>
-                    <View style={styles.tableCell}>
-                        <Text style={styles.tableCellText}>Лекции</Text>
-                    </View>
-                    <View style={styles.tableCell}>
-                        <Text style={styles.tableCellText}>Практики</Text>
                     </View>
                     <View style={[styles.tableCell, {flex:1.5}]}>
                         <Text style={styles.tableCellText}>Отчётность</Text>

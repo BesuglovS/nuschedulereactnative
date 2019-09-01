@@ -26,7 +26,7 @@ const CustomDrawerContentComponent = (props) => (
         <SafeAreaView style={styles.container} forceInset={{ top: 'always', horizontal: 'never' }}>
             <View style={styles.menuHeaderTopRow}>
                 <Image source={require('./src/assets/logo128.jpg')} style={styles.menuLogo}  />
-                <Text style={styles.menuHeader}>Расписание СГОАН</Text>
+                <Text style={styles.menuHeader}>Расписание академии Наяновой</Text>
             </View>
             <DrawerItems {...props} />
         </SafeAreaView>
@@ -48,8 +48,8 @@ const nuschedulereactnative = (DrawerNavigator({
         TeacherSession: {screen: TeacherSession},
         GroupDisciplines: {screen: GroupDisciplines},
         TeacherDisciplines: {screen: TeacherDisciplines},
-        LastLesson: {screen: LastLesson},
-        LastLessonFaculty: {screen: LastLessonFaculty},
+        // LastLesson: {screen: LastLesson},
+        // LastLessonFaculty: {screen: LastLessonFaculty},
         DisciplineLessons: {screen: DisciplineLessons},
         TeacherLessons: {screen: TeacherLessons},
     },
